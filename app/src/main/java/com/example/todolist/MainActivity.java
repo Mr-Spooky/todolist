@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    List<String> todos = new ArrayList<String>();
-    ArrayAdapter<String> adapter;
+    ArrayList<Todo> todos = new ArrayList<Todo>();
+    TodosAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +39,13 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     Log.d("debug", document.getId() + " => " + document.getData());
-                    todos.add(document.getData().get("content").toString());
-                    adapter.notifyDataSetChanged();
+                    Todo newTodo = new Todo(document.getId(), document.getData().get("content").toString(), (Boolean) document.getData().get("done"));
+                    adapter.add(newTodo);
                 }
             }
         });
 
-        adapter = new ArrayAdapter<String>(ct, R.layout.list_item, todos);
+        adapter = new TodosAdapter(this, todos);
         ListView listView = (ListView) findViewById(R.id.listview);
         listView.setAdapter(adapter);
 
